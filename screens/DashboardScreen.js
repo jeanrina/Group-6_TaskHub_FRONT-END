@@ -1,64 +1,44 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native'; // Import navigation hook
+import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const DashboardScreen = () => {
-  const navigation = useNavigation(); // Hook to navigate between screens
-
+const DashboardScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>TASKHUB</Text>
-        <View style={styles.profileSection}>
-          <FontAwesome name="user-circle" size={50} color="#1E90FF" />
-          <Text style={styles.profileName}>Jeany Enterina</Text>
-        </View>
-        <TouchableOpacity
-          style={styles.notificationIcon}
-          onPress={() => navigation.navigate('Reminder')} // Navigate to Reminder screen
-        >
-          <MaterialIcons name="notifications" size={30} color="#1E90FF" />
+      <Text style={styles.title}>TASKHUB</Text>
+      <View style={styles.userInfo}>
+        <Icon name="person-circle" size={50} color="#007BFF" />
+        <Text style={styles.username}>Jeany Enterina</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+          <Icon name="notifications" size={24} color="#007BFF" />
         </TouchableOpacity>
       </View>
-
-      {/* Search Bar */}
-      <View style={styles.searchContainer}>
-        <TextInput
-          placeholder="Search"
-          placeholderTextColor="#555"
-          style={styles.searchInput}
-        />
-        <TouchableOpacity style={styles.searchButton}>
-          <FontAwesome name="search" size={20} color="#fff" />
+      <TextInput
+        style={styles.searchBar}
+        placeholder="Search"
+        placeholderTextColor="#555"
+      />
+      <View style={styles.cardContainer}>
+        <TouchableOpacity style={styles.card}>
+          <Icon name="document-text" size={30} color="#007BFF" />
+          <Text style={styles.cardText}>Personal</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.card}>
+          <Icon name="people" size={30} color="#007BFF" />
+          <Text style={styles.cardText}>Team</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.card}>
+          <Icon name="calendar" size={30} color="#007BFF" />
+          <Text style={styles.cardText}>Calendar</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Task Categories */}
-      <View style={styles.categories}>
-        <TouchableOpacity style={styles.category}>
-          <FontAwesome name="file-text" size={24} color="#FF6347" />
-          <Text style={styles.categoryText}>Personal</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.category}>
-          <FontAwesome name="users" size={24} color="#1E90FF" />
-          <Text style={styles.categoryText}>Team</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.category}>
-          <FontAwesome name="calendar" size={24} color="#8A2BE2" />
-          <Text style={styles.categoryText}>Calendar</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Footer Navigation */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerItem}>
-          <FontAwesome name="home" size={24} color="#1E90FF" />
+        <TouchableOpacity onPress={() => navigation.navigate('Dashboard')}>
+          <Icon name="home" size={24} color="#007BFF" />
           <Text style={styles.footerText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.footerItem}>
-          <FontAwesome name="cog" size={24} color="#1E90FF" />
+        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+          <Icon name="settings" size={24} color="#007BFF" />
           <Text style={styles.footerText}>Settings</Text>
         </TouchableOpacity>
       </View>
@@ -69,86 +49,69 @@ const DashboardScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E0F7FA',
-    padding: 20,
-  },
-  header: {
+    backgroundColor: '#EAF6FF',
     alignItems: 'center',
-    marginBottom: 20,
+    paddingTop: 20,
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#1E90FF',
+    color: '#007BFF',
   },
-  profileSection: {
+  userInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
-  },
-  profileName: {
-    marginLeft: 10,
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#000',
-  },
-  notificationIcon: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginTop: 20,
     marginBottom: 20,
+  },
+  username: {
+    fontSize: 18,
+    marginHorizontal: 10,
+    color: '#007BFF',
+  },
+  searchBar: {
+    width: '90%',
+    height: 40,
     backgroundColor: '#fff',
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    elevation: 2,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 20,
+    borderColor: '#007BFF',
+    borderWidth: 1,
   },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: '#000',
+  cardContainer: {
+    width: '90%',
+    alignItems: 'center',
   },
-  searchButton: {
-    backgroundColor: '#1E90FF',
-    padding: 10,
-    borderRadius: 20,
-  },
-  categories: {
-    flex: 1,
-    justifyContent: 'space-around',
-  },
-  category: {
+  card: {
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#fff',
+    borderRadius: 8,
     padding: 15,
-    borderRadius: 10,
-    elevation: 2,
+    marginVertical: 5,
+    borderWidth: 1,
+    borderColor: '#007BFF',
   },
-  categoryText: {
+  cardText: {
     fontSize: 18,
-    fontWeight: '500',
-    marginLeft: 10,
-    color: '#000',
+    marginLeft: 15,
+    color: '#007BFF',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingTop: 10,
+    width: '100%',
+    position: 'absolute',
+    bottom: 10,
     borderTopWidth: 1,
-    borderColor: '#ddd',
-  },
-  footerItem: {
-    alignItems: 'center',
+    borderTopColor: '#007BFF',
+    paddingTop: 10,
   },
   footerText: {
+    color: '#007BFF',
     fontSize: 14,
-    marginTop: 5,
-    color: '#1E90FF',
   },
 });
 
