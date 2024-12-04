@@ -38,6 +38,6 @@ export default function App() {
         <Stack.Screen name="CreateTeam" component={CreateTeamScreen} />
         <Stack.Screen name="SoftEng" component={SoftEngScreen} />
       </Stack.Navigator>
-      </AppProvider>
+    </AppProvider>
   );
 }
