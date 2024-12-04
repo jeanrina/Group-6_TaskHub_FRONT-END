@@ -13,9 +13,12 @@ import AccountSettingsScreen from './AccountSettingsScreen';
 import CustomizationScreen from './CustomizationScreen';
 import NotesTaskHomeScreen from './NotesTaskHomeScreen';
 import AddNotesTasksScreen from './AddNotesTasksScreen';
+<<<<<<< HEAD
 import TeamScreen from './TeamScreen';
 import CreateTeamScreen from './CreateTeamScreen';
 import SoftEngScreen from './SoftEngScreen';
+=======
+>>>>>>> 777dc75d3db35e7b3db9b9417a9364b1bad4f086
 
 const Stack = createStackNavigator();
 
@@ -34,11 +37,14 @@ export default function App() {
         <Stack.Screen name="Customization" component={CustomizationScreen} />
         <Stack.Screen name="NotesTask" component={NotesTaskHomeScreen} />
         <Stack.Screen name="AddNotesTasks" component={AddNotesTasksScreen} />
+<<<<<<< HEAD
         <Stack.Screen name="TeamScreen" component={TeamScreen} />
         <Stack.Screen name="CreateTeamScreen" component={CreateTeamScreen} />
         <Stack.Screen name="SoftEngScreen" component={SoftEngScreen} />
 
 
+=======
+>>>>>>> 777dc75d3db35e7b3db9b9417a9364b1bad4f086
       </Stack.Navigator>
       </AppProvider>
   );
