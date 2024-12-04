@@ -11,50 +11,61 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const SoftEngScreen = ({ navigation }) => {
   const [showNotes, setShowNotes] = useState(false);
+  const [showTasks, setShowTasks] = useState(false); // Initialize showTasks state
+  const [tasks, setTasks] = useState([
+    { id: 1, text: 'Complete the presentation', completed: false },
+    { id: 2, text: 'Submit the report', completed: false },
+  ]); // Example tasks data
+
+  const toggleTaskCompletion = (taskId) => {
+    setTasks((prevTasks) =>
+      prevTasks.map((task) =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    );
+  };
 
   const notes = ['Script', 'Presentation Outline'];
 
   return (
-    <LinearGradient colors={['#E0F7FF', '#FFFFFF']} style={styles.container}>
+    <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back-outline" size={24} color="#000" />
+          <Ionicons name="arrow-back" size={30} color="#FFF" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Soft Eng</Text>
-        <TouchableOpacity style={styles.inviteButton}>
-          <Text style={styles.inviteText}>Invite</Text>
-        </TouchableOpacity>
+        <Text style={styles.title}>Soft Eng</Text>
       </View>
 
-      {/* Add New Item Button */}
+      {/* Add Notes and Task Button */}
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate('AddNotesTasks')}
       >
-        <Text style={styles.addButtonText}>Add New Item</Text>
-        <Ionicons name="add-circle-outline" size={24} color="#FFF" />
+        <Text style={styles.addButtonText}>Add Notes and Task</Text>
       </TouchableOpacity>
 
-      <ScrollView>
-        {/* Notes Section */}
+      <ScrollView style={styles.scrollView}>
+        {/* Notes Dropdown */}
         <TouchableOpacity
-          style={styles.sectionHeader}
-          onPress={() => setShowNotes(!showNotes)}
+          style={styles.option}
+          onPress={() => setShowNotes((prev) => !prev)}
         >
-          <Text style={styles.sectionHeaderText}>Notes</Text>
+          <Ionicons name="document-text-outline" size={24} color="#0096FF" />
+          <Text style={styles.optionText}>Notes</Text>
           <Ionicons
             name={showNotes ? 'chevron-up-outline' : 'chevron-down-outline'}
-            size={20}
-            color="#000"
+            size={24}
+            color="#0096FF"
+            style={{ marginLeft: 'auto' }}
           />
         </TouchableOpacity>
         {showNotes && (
-          <View style={styles.sectionContent}>
+          <View style={styles.dropdown}>
             {notes.map((note, index) => (
-              <View key={index} style={styles.noteItem}>
-                <Text style={styles.noteText}>{note}</Text>
-                <View style={styles.noteActions}>
+              <View key={index} style={styles.listItem}>
+                <Text style={styles.listText}>{note}</Text>
+                <View style={styles.icons}>
                   <TouchableOpacity>
                     <Ionicons name="create-outline" size={20} color="#0096FF" />
                   </TouchableOpacity>
@@ -67,24 +78,75 @@ const SoftEngScreen = ({ navigation }) => {
           </View>
         )}
 
-        {/* Tasks Section */}
+        {/* Tasks Dropdown */}
         <TouchableOpacity
-          style={styles.sectionHeader}
-          onPress={() => navigation.navigate('Tasks')}
+          style={styles.option}
+          onPress={() => setShowTasks((prev) => !prev)}
         >
-          <Text style={styles.sectionHeaderText}>Tasks</Text>
-          <Ionicons name="chevron-forward-outline" size={20} color="#000" />
+          <Ionicons name="checkmark-circle-outline" size={24} color="#D81B60" />
+          <Text style={styles.optionText}>Tasks</Text>
+          <Ionicons
+            name={showTasks ? 'chevron-up-outline' : 'chevron-down-outline'}
+            size={24}
+            color="#D81B60"
+            style={{ marginLeft: 'auto' }}
+          />
         </TouchableOpacity>
+        {showTasks && (
+          <View style={styles.dropdown}>
+            {tasks.map((task) => (
+              <View key={task.id} style={styles.listItem}>
+                <TouchableOpacity
+                  onPress={() => toggleTaskCompletion(task.id)}
+                  style={styles.checkbox}
+                >
+                  <Ionicons
+                    name={
+                      task.completed ? 'checkbox' : 'checkbox-outline'
+                    }
+                    size={24}
+                    color={task.completed ? '#4CAF50' : '#D81B60'}
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={[
+                    styles.listText,
+                    task.completed && {
+                      textDecorationLine: 'line-through',
+                      color: '#666',
+                    },
+                  ]}
+                >
+                  {task.text}
+                </Text>
+                <View style={styles.icons}>
+                  <TouchableOpacity>
+                    <Ionicons name="create-outline" size={20} color="#0096FF" />
+                  </TouchableOpacity>
+                  <TouchableOpacity>
+                    <Ionicons name="trash-outline" size={20} color="#D81B60" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        )}
       </ScrollView>
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNavigation}>
-        <TouchableOpacity onPress={() => navigation.navigate('Home')}>
-          <Ionicons name="home-outline" size={24} color="#0096FF" />
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Home')}
+        >
+          <Ionicons name="home-outline" size={24} color="#FFF" />
           <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-          <Ionicons name="settings-outline" size={24} color="#0096FF" />
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Settings')}
+        >
+          <Ionicons name="settings-outline" size={24} color="#FFF" />
           <Text style={styles.navText}>Settings</Text>
         </TouchableOpacity>
       </View>
@@ -101,91 +163,95 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
-  headerTitle: {
-    flex: 1,
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#000',
+    color: '#FFF',
     marginLeft: 10,
   },
-  inviteButton: {
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    backgroundColor: '#0096FF',
-    borderRadius: 20,
-  },
-  inviteText: {
-    fontSize: 16,
-    color: '#FFF',
-  },
   addButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    backgroundColor: '#0096FF',
-    borderRadius: 25,
     marginBottom: 20,
+    borderRadius: 25,
+    paddingVertical: 15,
+    alignItems: 'center',
+    backgroundColor: '#0D0070',
+    overflow: 'hidden',
   },
   addButtonText: {
-    color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
+    color: '#FFF',
   },
-  sectionHeader: {
+  option: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 15,
+    backgroundColor: '#FFF',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderRadius: 15,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  optionText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginLeft: 15,
+  },
+  dropdown: {
     backgroundColor: '#F0F0F0',
     borderRadius: 10,
-    marginBottom: 10,
-  },
-  sectionHeaderText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  sectionContent: {
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    backgroundColor: '#FFF',
-    borderRadius: 10,
+    padding: 10,
     marginBottom: 15,
   },
-  noteItem: {
+  listItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E0E0E0',
+    backgroundColor: '#FFF',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderColor: '#E0E0E0',
+    borderWidth: 1,
   },
-  noteText: {
+  listText: {
     fontSize: 16,
     color: '#333',
+    flex: 1,
   },
-  noteActions: {
+  icons: {
     flexDirection: 'row',
     gap: 10,
   },
+  checkbox: {
+    marginRight: 10,
+  },
+  scrollView: {
+    marginBottom: 80,
+  },
   bottomNavigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 15,
-    paddingHorizontal: 50,
-    backgroundColor: '#FFF',
     position: 'absolute',
     bottom: 0,
-    width: '100%',
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#0096FF',
+    paddingVertical: 15,
+  },
+  navButton: {
+    alignItems: 'center',
   },
   navText: {
-    fontSize: 12,
-    color: '#0096FF',
-    textAlign: 'center',
+    color: '#FFF',
+    fontSize: 14,
+    marginTop: 5,
   },
 });
 
