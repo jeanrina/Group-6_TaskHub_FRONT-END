@@ -34,10 +34,10 @@ export default function App() {
         <Stack.Screen name="Customization" component={CustomizationScreen} />
         <Stack.Screen name="NotesTask" component={NotesTaskHomeScreen} />
         <Stack.Screen name="AddNotesTasks" component={AddNotesTasksScreen} />
-        <Stack.Screen name="TeamScreen" component={TeamScreen} />
-        <Stack.Screen name="CreateTeamScreen" component={CreateTeamScreen} />
-        <Stack.Screen name="SoftEngScreen" component={SoftEngScreen} />
+        <Stack.Screen name="Team" component={TeamScreen} />
+        <Stack.Screen name="CreateTeam" component={CreateTeamScreen} />
+        <Stack.Screen name="SoftEng" component={SoftEngScreen} />
       </Stack.Navigator>
-      </AppProvider>
+    </AppProvider>
   );
 }
