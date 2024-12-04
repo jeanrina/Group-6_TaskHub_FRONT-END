@@ -38,10 +38,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={styles.sectionButton} 
-        onPress={() => navigation.navigate('Team')}
-      >
+      <TouchableOpacity style={styles.sectionButton}>
         <View style={styles.sectionContent}>
           <Ionicons name="people-outline" size={30} color="#673AB7" />
           <Text style={styles.sectionText}>Team</Text>
