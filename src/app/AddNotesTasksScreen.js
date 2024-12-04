@@ -1,5 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Modal,
+  FlatList,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppContext } from '../context/AppContext';
@@ -9,6 +18,10 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
   const { editMode, type, item, index } = route.params || {};
   const [title, setTitle] = useState(editMode ? item.title : '');
   const [body, setBody] = useState(editMode ? item.body : '');
+  const [selectedColor, setSelectedColor] = useState('#FFF'); // Default color
+  const [colorModalVisible, setColorModalVisible] = useState(false);
+
+  const colors = ['#FFFFFF', '#FFCDD2', '#F8BBD0', '#E1BEE7', '#D1C4E9', '#C5CAE9', '#BBDEFB', '#B3E5FC', '#B2DFDB', '#C8E6C9'];
 
   const handleSave = () => {
     if (!title.trim() || !body.trim()) {
@@ -16,27 +29,26 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
       return;
     }
 
+    const noteOrTask = { title, body, color: selectedColor };
+
     if (editMode) {
       if (type === 'Note') {
-        editNote(index, { title, body });
+        editNote(index, noteOrTask);
         Alert.alert('Success', 'Note updated!');
-      }
-      if (type === 'Task') {
-        editTask(index, { text: title, body });
+      } else {
+        editTask(index, { ...noteOrTask, text: title });
         Alert.alert('Success', 'Task updated!');
       }
     } else {
       if (type === 'Note') {
-        addNote({ title, body });
+        addNote(noteOrTask);
         Alert.alert('Success', 'Note added!');
-      }
-      if (type === 'Task') {
-        addTask({ id: Date.now(), text: title, body, completed: false });
+      } else {
+        addTask({ ...noteOrTask, id: Date.now(), text: title, completed: false });
         Alert.alert('Success', 'Task added!');
       }
     }
 
-    // Clear the inputs after saving
     setTitle('');
     setBody('');
     navigation.goBack();
@@ -44,7 +56,6 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
 
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
-      {/* Header Section */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color="#FFF" />
@@ -52,13 +63,15 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
         <Text style={styles.title}>{editMode ? `Edit ${type}` : 'Add Notes & Tasks'}</Text>
       </View>
 
-      {/* Input Section */}
       <View style={styles.inputContainer}>
-      <View style={styles.toolbar}>
+        <View style={styles.toolbar}>
           <TouchableOpacity style={styles.iconButton}>
             <Text style={styles.toolbarIconText}>Aa</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => setColorModalVisible(true)}
+          >
             <Ionicons name="color-palette-outline" size={20} color="#0096FF" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>
@@ -70,14 +83,14 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
         </View>
 
         <TextInput
-          style={styles.titleInput}
+          style={[styles.titleInput, { backgroundColor: selectedColor }]}
           placeholder="Title"
           placeholderTextColor="#AAA"
           value={title}
           onChangeText={setTitle}
         />
         <TextInput
-          style={styles.bodyInput}
+          style={[styles.bodyInput, { backgroundColor: selectedColor }]}
           placeholder="Write something..."
           placeholderTextColor="#AAA"
           value={body}
@@ -86,64 +99,63 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
         />
       </View>
 
-    {/* Save Buttons */}
-    <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.saveButton}
-          onPress={() => handleSave('Note')}
-        >
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.saveButton} onPress={() => handleSave('Note')}>
           <Text style={styles.saveButtonText}>Save as Notes</Text>
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.saveButton}
-          onPress={() => handleSave('Task')}
-        >
+        <TouchableOpacity style={styles.saveButton} onPress={() => handleSave('Task')}>
           <Text style={styles.saveButtonText}>Save as Tasks</Text>
         </TouchableOpacity>
-      </View>  
+      </View>
 
-    {/* Bottom Navigation */}
-    <View style={styles.bottomNavigation}>
-    <TouchableOpacity
-      style={styles.navButton}
-      onPress={() => navigation.navigate('Home')}
-    >
-      <Ionicons name="home-outline" size={24} color="#FFF" />
-      <Text style={styles.navText}>Home</Text>
-    </TouchableOpacity>
-    <TouchableOpacity
-      style={styles.navButton}
-      onPress={() => navigation.navigate('Settings')}
-    >
-      <Ionicons name="settings-outline" size={24} color="#FFF" />
-      <Text style={styles.navText}>Settings</Text>
-    </TouchableOpacity>
-  </View>
-  </LinearGradient>
+      {/* Color Picker Modal */}
+      <Modal transparent={true} visible={colorModalVisible}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select a Color</Text>
+            <FlatList
+              data={colors}
+              keyExtractor={(item) => item}
+              numColumns={5}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={[styles.colorOption, { backgroundColor: item }]}
+                  onPress={() => {
+                    setSelectedColor(item);
+                    setColorModalVisible(false);
+                  }}
+                />
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
+    </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    paddingHorizontal: 20, 
-    paddingTop: 40 
+  // Add or modify styles to include modal and color picker options
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    paddingTop: 40,
   },
-  header: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    marginBottom: 30 
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 30,
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    color: '#FFF', 
-    marginLeft: 10 
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFF',
+    marginLeft: 10,
   },
-  inputContainer: { 
-    backgroundColor: '#FFF', 
-    borderRadius: 15, 
-    padding: 20, 
+  inputContainer: {
+    backgroundColor: '#FFF',
+    borderRadius: 15,
+    padding: 20,
     marginBottom: 20,
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -153,7 +165,6 @@ const styles = StyleSheet.create({
   },
   toolbar: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-around',
     marginBottom: 15,
     backgroundColor: '#F5F5F5',
@@ -165,22 +176,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: 6,
   },
-  toolbarIconText: {
-    fontSize: 16,
-    color: '#0096FF',
+  titleInput: {
+    fontSize: 18,
     fontWeight: 'bold',
+    marginBottom: 15,
+    borderRadius: 8,
+    padding: 10,
   },
-  titleInput: { 
-    fontSize: 18, 
-    fontWeight: 'bold', 
-    borderBottomWidth: 1, 
-    borderBottomColor: '#DDD', 
-    marginBottom: 15 
-  },
-  bodyInput: { 
-    fontSize: 16, 
-    textAlignVertical: 'top', 
-    flex: 1 
+  bodyInput: {
+    fontSize: 16,
+    flex: 1,
+    textAlignVertical: 'top',
+    borderRadius: 8,
+    padding: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -192,31 +200,35 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 30,
     borderRadius: 25,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   saveButtonText: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#FFF',
   },
-  bottomNavigation: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#007BFF',
-    paddingVertical: 15,
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  navButton: {
+  modalContent: {
+    backgroundColor: '#FFF',
+    padding: 20,
+    borderRadius: 10,
     alignItems: 'center',
   },
-  navText: {
-    color: '#FFF',
-    fontSize: 14,
-    marginTop: 5,
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  colorOption: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    margin: 10,
+    borderWidth: 1,
+    borderColor: '#DDD',
   },
 });
 

@@ -1,29 +1,31 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const NotesTaskHomeScreen = ({ navigation }) => {
-  // States for dropdown visibility
+const SoftEngScreen = ({ navigation }) => {
   const [showNotes, setShowNotes] = useState(false);
-  const [showTasks, setShowTasks] = useState(false);
-
-  // Sample data and states for checkbox
-  const notes = ['Note 1', 'Note 2', 'Note 3'];
+  const [showTasks, setShowTasks] = useState(false); // Initialize showTasks state
   const [tasks, setTasks] = useState([
-    { id: 1, text: 'Task 1', completed: false },
-    { id: 2, text: 'Task 2', completed: false },
-    { id: 3, text: 'Task 3', completed: false },
-  ]);
+    { id: 1, text: 'Complete the presentation', completed: false },
+    { id: 2, text: 'Submit the report', completed: false },
+  ]); // Example tasks data
 
-  // Toggle task completion
-  const toggleTaskCompletion = (id) => {
+  const toggleTaskCompletion = (taskId) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
+        task.id === taskId ? { ...task, completed: !task.completed } : task
       )
     );
   };
+
+  const notes = ['Script', 'Presentation Outline'];
 
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
@@ -32,7 +34,7 @@ const NotesTaskHomeScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color="#FFF" />
         </TouchableOpacity>
-        <Text style={styles.title}>Notes and Tasks</Text>
+        <Text style={styles.title}>Soft Eng</Text>
       </View>
 
       {/* Add Notes and Task Button */}
@@ -253,4 +255,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default NotesTaskHomeScreen;
+export default SoftEngScreen;
