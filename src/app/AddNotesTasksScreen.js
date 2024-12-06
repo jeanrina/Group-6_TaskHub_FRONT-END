@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 14,
     marginTop: 5,
-
+  },
   headingOption: {
     padding: 10,
     borderBottomWidth: 1,
@@ -384,8 +384,7 @@ const styles = StyleSheet.create({
   },
   selectedHeading: {
     fontWeight: 'bold',
-
   },
-}),
+});
 
 export default AddNotesTasksScreen;
