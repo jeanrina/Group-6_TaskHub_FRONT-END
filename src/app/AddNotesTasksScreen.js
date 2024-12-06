@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,9 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
   const [body, setBody] = useState(editMode ? item.body : '');
   const [selectedColor, setSelectedColor] = useState('#FFF'); // Default color
   const [colorModalVisible, setColorModalVisible] = useState(false);
+  const [headingModalVisible, setHeadingModalVisible] = useState(false);
+  const [headingStyle, setHeadingStyle] = useState('normal'); // Track selected heading style
+  const [listType, setListType] = useState('none'); // Track list type (none, bullet, or numbered)
 
   const colors = ['#FFFFFF', '#FFCDD2', '#F8BBD0', '#E1BEE7', '#D1C4E9', '#C5CAE9', '#BBDEFB', '#B3E5FC', '#B2DFDB', '#C8E6C9'];
 
@@ -54,6 +57,48 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
     navigation.goBack();
   };
 
+  const handleHeadingSelect = (style) => {
+    setHeadingStyle(style);
+    setHeadingModalVisible(false); // Hide the modal after selection
+  };
+
+  const toggleListType = () => {
+    const newListType = listType === 'number' ? 'bullet' : (listType === 'bullet' ? 'none' : 'number');
+    setListType(newListType);
+  };
+
+  const getHeadingStyle = () => {
+    switch (headingStyle) {
+      case 'heading1':
+        return { fontSize: 24, fontWeight: 'bold' }; // Heading 1 is bold
+      case 'heading2':
+        return { fontSize: 20, fontWeight: 'normal' }; // Heading 2 is normal
+      case 'heading3':
+        return { fontSize: 18, fontWeight: 'normal' }; // Heading 3 is normal
+      case 'heading4':
+        return { fontSize: 16, fontWeight: 'normal' }; // Heading 4 is normal
+      default:
+        return { fontSize: 16 }; // Normal text
+    }
+  };
+
+  const formatBodyWithList = (bodyText) => {
+    const lines = bodyText.split('\n');
+    if (listType === 'bullet') {
+      return lines.map(line => `• ${line}`).join('\n');
+    } else if (listType === 'number') {
+      return lines.map((line, index) => `${index + 1}. ${line}`).join('\n');
+    }
+    return bodyText;
+  };
+
+  // Automatically format body text based on list type
+  useEffect(() => {
+    if (listType !== 'none') {
+      setBody(formatBodyWithList(body));
+    }
+  }, [listType]);
+
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
       <View style={styles.header}>
@@ -65,7 +110,10 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
 
       <View style={styles.inputContainer}>
         <View style={styles.toolbar}>
-          <TouchableOpacity style={styles.iconButton}>
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={() => setHeadingModalVisible(!headingModalVisible)} // Toggle heading options
+          >
             <Text style={styles.toolbarIconText}>Aa</Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -74,8 +122,11 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           >
             <Ionicons name="color-palette-outline" size={20} color="#0096FF" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="list-outline" size={20} color="#0096FF" />
+          <TouchableOpacity
+            style={styles.iconButton}
+            onPress={toggleListType} // Toggle list type
+          >
+            <Ionicons name={listType === 'number' ? 'list-number' : 'list-outline'} size={20} color="#0096FF" />
           </TouchableOpacity>
           <TouchableOpacity style={styles.iconButton}>
             <Ionicons name="image-outline" size={20} color="#0096FF" />
@@ -90,11 +141,11 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           onChangeText={setTitle}
         />
         <TextInput
-          style={[styles.bodyInput, { backgroundColor: selectedColor }]}
+          style={[styles.bodyInput, { backgroundColor: selectedColor }, getHeadingStyle()]}
           placeholder="Write something..."
           placeholderTextColor="#AAA"
           value={body}
-          onChangeText={setBody}
+          onChangeText={text => setBody(text)} // Just set body text directly
           multiline
         />
       </View>
@@ -130,12 +181,34 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Heading Options Modal */}
+      <Modal transparent={true} visible={headingModalVisible}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Select a Heading Style</Text>
+            <FlatList
+              data={['heading1', 'heading2', 'heading3', 'heading4']}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.headingOption}
+                  onPress={() => handleHeadingSelect(item)}
+                >
+                  <Text style={[styles.headingOptionText, headingStyle === item && styles.selectedHeading]}>
+                    {item === 'heading1' ? 'Heading 1' : item === 'heading2' ? 'Heading 2' : item === 'heading3' ? 'Heading 3' : 'Heading 4'}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </View>
+      </Modal>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  // Add or modify styles to include modal and color picker options
   container: {
     flex: 1,
     paddingHorizontal: 20,
@@ -154,9 +227,8 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     backgroundColor: '#FFF',
-    borderRadius: 15,
-    padding: 20,
-    marginBottom: 20,
+    borderRadius: 8,
+    padding: 15,
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 2 },
@@ -182,6 +254,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 8,
     padding: 10,
+    borderColor: '#CCC',
+    borderWidth: 1,
   },
   bodyInput: {
     fontSize: 16,
@@ -189,6 +263,8 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     borderRadius: 8,
     padding: 10,
+    borderColor: '#CCC',
+    borderWidth: 1,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -229,6 +305,17 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 1,
     borderColor: '#DDD',
+  },
+  headingOption: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#DDD',
+  },
+  headingOptionText: {
+    fontSize: 18,
+  },
+  selectedHeading: {
+    fontWeight: 'bold',
   },
 });
 
