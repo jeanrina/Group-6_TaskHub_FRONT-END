@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   editProfileButton: {
-    backgroundColor: '#003EFF',
+    backgroundColor: '#0D0070',
     paddingVertical: 12,
     paddingHorizontal: 25,
     borderRadius: 25,
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   saveButton: {
-    backgroundColor: '#003EFF',
+    backgroundColor: '#0D0070',
     paddingVertical: 12,
     borderRadius: 25,
     alignSelf: 'center',

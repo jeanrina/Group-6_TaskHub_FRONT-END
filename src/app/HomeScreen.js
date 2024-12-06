@@ -48,7 +48,10 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.sectionButton}>
+      <TouchableOpacity 
+        style={styles.sectionButton}
+        onPress={() => navigation.navigate('Calendar')}
+      >
         <View style={styles.sectionContent}>
           <FontAwesome name="calendar" size={30} color="#D81B60" />
           <Text style={styles.sectionText}>Calendar</Text>

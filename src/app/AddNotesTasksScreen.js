@@ -18,12 +18,23 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
   const { editMode, type, item, index } = route.params || {};
   const [title, setTitle] = useState(editMode ? item.title : '');
   const [body, setBody] = useState(editMode ? item.body : '');
-  const [selectedColor, setSelectedColor] = useState('#FFF'); // Default color
+  const [selectedColor, setSelectedColor] = useState(editMode ? item.color : '#FFFFFF'); // Default color
   const [colorModalVisible, setColorModalVisible] = useState(false);
 
-  const colors = ['#FFFFFF', '#FFCDD2', '#F8BBD0', '#E1BEE7', '#D1C4E9', '#C5CAE9', '#BBDEFB', '#B3E5FC', '#B2DFDB', '#C8E6C9'];
+  const colors = [
+    '#FFFFFF',
+    '#FFCDD2',
+    '#F8BBD0',
+    '#E1BEE7',
+    '#D1C4E9',
+    '#C5CAE9',
+    '#BBDEFB',
+    '#B3E5FC',
+    '#B2DFDB',
+    '#C8E6C9',
+  ];
 
-  const handleSave = () => {
+  const handleSave = (saveType) => {
     if (!title.trim() || !body.trim()) {
       Alert.alert('Error', 'Please fill in both the title and body.');
       return;
@@ -40,30 +51,40 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
         Alert.alert('Success', 'Task updated!');
       }
     } else {
-      if (type === 'Note') {
+      if (saveType === 'Note') {
         addNote(noteOrTask);
         Alert.alert('Success', 'Note added!');
       } else {
-        addTask({ ...noteOrTask, id: Date.now(), text: title, completed: false });
+        addTask({
+          ...noteOrTask,
+          id: Date.now(),
+          text: title,
+          completed: false,
+        });
         Alert.alert('Success', 'Task added!');
       }
     }
 
     setTitle('');
     setBody('');
-    navigation.goBack();
+    navigation.goBack(); // Navigate back after saving
   };
 
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color="#FFF" />
         </TouchableOpacity>
-        <Text style={styles.title}>{editMode ? `Edit ${type}` : 'Add Notes & Tasks'}</Text>
+        <Text style={styles.title}>
+          {editMode ? `Edit ${type}` : 'Add Notes & Tasks'}
+        </Text>
       </View>
 
+      {/* Input Section */}
       <View style={styles.inputContainer}>
+        {/* Toolbar */}
         <View style={styles.toolbar}>
           <TouchableOpacity style={styles.iconButton}>
             <Text style={styles.toolbarIconText}>Aa</Text>
@@ -82,6 +103,7 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
 
+        {/* Title Input */}
         <TextInput
           style={[styles.titleInput, { backgroundColor: selectedColor }]}
           placeholder="Title"
@@ -89,6 +111,7 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           value={title}
           onChangeText={setTitle}
         />
+        {/* Body Input */}
         <TextInput
           style={[styles.bodyInput, { backgroundColor: selectedColor }]}
           placeholder="Write something..."
@@ -99,11 +122,18 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
         />
       </View>
 
+      {/* Save Buttons */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.saveButton} onPress={() => handleSave('Note')}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={() => handleSave('Calendar')}
+        >
           <Text style={styles.saveButtonText}>Save as Notes</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton} onPress={() => handleSave('Task')}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={() => handleSave('Calendar')}
+        >
           <Text style={styles.saveButtonText}>Save as Tasks</Text>
         </TouchableOpacity>
       </View>
@@ -130,12 +160,29 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNavigation}>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Home')}
+        >
+          <Ionicons name="home-outline" size={24} color="#FFF" />
+          <Text style={styles.navText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Settings')}
+        >
+          <Ionicons name="settings-outline" size={24} color="#FFF" />
+          <Text style={styles.navText}>Settings</Text>
+        </TouchableOpacity>
+      </View>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  // Add or modify styles to include modal and color picker options
   container: {
     flex: 1,
     paddingHorizontal: 20,
@@ -229,6 +276,24 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 1,
     borderColor: '#DDD',
+  },
+  bottomNavigation: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#0096FF',
+    paddingVertical: 15,
+  },
+  navButton: {
+    alignItems: 'center',
+  },
+  navText: {
+    color: '#FFF',
+    fontSize: 14,
+    marginTop: 5,
   },
 });
 
