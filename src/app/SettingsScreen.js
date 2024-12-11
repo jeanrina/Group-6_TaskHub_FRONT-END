@@ -121,6 +121,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   logoutButton: {
+    backgroundColor: '#0D0070',
     paddingVertical: 15,
     borderRadius: 15,
     alignItems: 'center',
