@@ -6,27 +6,33 @@ import { LinearGradient } from 'expo-linear-gradient';
 const SettingsScreen = ({ navigation }) => {
   const [darkMode, setDarkMode] = useState(false);
 
+  // Dynamic styles based on dark mode
+  const dynamicStyles = darkMode ? darkModeStyles : lightModeStyles;
+
   return (
-    <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
+    <LinearGradient 
+      colors={darkMode ? ['#121212', '#1E1E1E'] : ['#0096FF', '#A0D9FF']} 
+      style={styles.container}
+    >
       {/* Header Section */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={30} color="#FFF" />
+          <Ionicons name="arrow-back" size={30} color={darkMode ? "#FFF" : "#000"} />
         </TouchableOpacity>
-        <Text style={styles.title}>Settings</Text>
+        <Text style={[styles.title, dynamicStyles.text]}>Settings</Text>
       </View>
 
       {/* Account Settings */}
       <TouchableOpacity
-        style={styles.option}
+        style={[styles.option, dynamicStyles.option]}
         onPress={() => navigation.navigate('AccountSettings')}
       >
-        <Text style={styles.optionText}>Account Settings</Text>
+        <Text style={[styles.optionText, dynamicStyles.text]}>Account Settings</Text>
       </TouchableOpacity>
 
       {/* Dark Mode Toggle */}
-      <View style={styles.option}>
-        <Text style={styles.optionText}>Dark Mode</Text>
+      <View style={[styles.option, dynamicStyles.option]}>
+        <Text style={[styles.optionText, dynamicStyles.text]}>Dark Mode</Text>
         <Switch
           value={darkMode}
           onValueChange={(value) => setDarkMode(value)}
@@ -37,37 +43,43 @@ const SettingsScreen = ({ navigation }) => {
 
       {/* Customization Button */}
       <TouchableOpacity
-        style={styles.option}
+        style={[styles.option, dynamicStyles.option]}
         onPress={() => navigation.navigate('Customization')}
       >
-        <Text style={styles.optionText}>Customization</Text>
+        <Text style={[styles.optionText, dynamicStyles.text]}>Customization</Text>
       </TouchableOpacity>
 
       {/* Other Settings */}
-      <TouchableOpacity style={styles.option}>
-        <Text style={styles.optionText}>About Us</Text>
+      <TouchableOpacity style={[styles.option, dynamicStyles.option]}>
+        <Text style={[styles.optionText, dynamicStyles.text]}>About Us</Text>
       </TouchableOpacity>
 
       {/* Logout Button */}
-      <TouchableOpacity style={styles.logoutButton}>
-        <Text style={styles.logoutButtonText}>Logout</Text>
+      <TouchableOpacity 
+        style={[styles.logoutButton, dynamicStyles.logoutButton]} 
+        onPress={() => navigation.reset({
+          index: 0,
+          routes: [{ name: 'SignIn' }],
+        })}
+      >
+        <Text style={[styles.logoutButtonText, dynamicStyles.text]}>Logout</Text>
       </TouchableOpacity>
 
       {/* Bottom Navigation */}
-      <View style={styles.bottomNavigation}>
+      <View style={[styles.bottomNavigation, dynamicStyles.bottomNavigation]}>
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Home')}
         >
-          <Ionicons name="home-outline" size={24} color="#FFF" />
-          <Text style={styles.navText}>Home</Text>
+          <Ionicons name="home-outline" size={24} color={darkMode ? "#FFF" : "#000"} />
+          <Text style={[styles.navText, dynamicStyles.text]}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Settings')}
         >
-          <Ionicons name="settings-outline" size={24} color="#FFF" />
-          <Text style={styles.navText}>Settings</Text>
+          <Ionicons name="settings-outline" size={24} color={darkMode ? "#FFF" : "#000"} />
+          <Text style={[styles.navText, dynamicStyles.text]}>Settings</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -88,14 +100,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFF',
     marginLeft: 15,
   },
   option: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFF',
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderRadius: 15,
@@ -109,10 +119,8 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
   },
   logoutButton: {
-    backgroundColor: '#007BFF',
     paddingVertical: 15,
     borderRadius: 15,
     alignItems: 'center',
@@ -123,7 +131,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   logoutButtonText: {
-    color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -134,16 +141,44 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     justifyContent: 'space-around',
-    backgroundColor: '#0096FF',
     paddingVertical: 15,
   },
   navButton: {
     alignItems: 'center',
   },
   navText: {
-    color: '#FFF',
     fontSize: 14,
     marginTop: 5,
+  },
+});
+
+const lightModeStyles = StyleSheet.create({
+  text: {
+    color: '#333',
+  },
+  option: {
+    backgroundColor: '#FFF',
+  },
+  logoutButton: {
+    backgroundColor: '#007BFF',
+  },
+  bottomNavigation: {
+    backgroundColor: '#0096FF',
+  },
+});
+
+const darkModeStyles = StyleSheet.create({
+  text: {
+    color: '#FFF',
+  },
+  option: {
+    backgroundColor: '#333',
+  },
+  logoutButton: {
+    backgroundColor: '#444',
+  },
+  bottomNavigation: {
+    backgroundColor: '#121212',
   },
 });
 

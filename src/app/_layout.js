@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AppProvider } from '../context/AppContext';
 
 import WelcomeScreen from './WelcomeScreen';
+import SignInSignUpScreen from './SignInSignUpScreen';
 import SignInScreen from './SignInScreen';
 import SignUpScreen from './SignUpScreen';
 import HomeScreen from './HomeScreen';
@@ -24,6 +25,7 @@ export default function App() {
     <AppProvider>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Welcome" component={WelcomeScreen} />
+        <Stack.Screen name="SignInSignUp" component={SignInSignUpScreen}/>
         <Stack.Screen name="SignIn" component={SignInScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />

@@ -1,33 +1,35 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient'; // Add this package if not already installed
-import { Ionicons } from '@expo/vector-icons'; // Add this package for icons
+import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { Dimensions } from 'react-native';
+
+const { width, height } = Dimensions.get('window');
 
 export default function WelcomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <LinearGradient colors={['#005bea', '#00C6FB']} style={styles.header}>
-        <View style={styles.headerContent}>
+      {/* Image background with wave */}
+      <ImageBackground
+        source={require('../../assets/waveBackground.png')} // Path to your PNG wave image
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.topContainer}>
+          {/* Title */}
           <Text style={styles.title}>TASKHUB</Text>
-          <Text style={styles.subtitle}>Personal & Collaborative Task Management</Text>
+          {/* Subtitle */}
+          <Text style={styles.subtitle}>
+            Personal and Collaborative{'\n'}Task Management
+          </Text>
         </View>
-      </LinearGradient>
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={[styles.button, styles.shadow]}
-          onPress={() => navigation.navigate('SignIn')}
-        >
-          <Ionicons name="log-in-outline" size={24} color="#00A3FF" style={styles.icon} />
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.button, styles.shadow]}
-          onPress={() => navigation.navigate('SignUp')}
-        >
-          <Ionicons name="person-add-outline" size={24} color="#00A3FF" style={styles.icon} />
-          <Text style={styles.buttonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
+      </ImageBackground>
+
+      {/* Get Started Button */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('SignInSignUp')}
+      >
+        <Text style={styles.buttonText}>Get Started</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -35,72 +37,50 @@ export default function WelcomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fefefe',
   },
-  header: {
-    flex: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    paddingHorizontal: 20,
-    elevation: 4, // Add slight elevation for a subtle shadow
+  backgroundImage: {
+    flex: 1,
+    justifyContent: 'flex-end', // Keeps the wave at the bottom of the screen
   },
-  headerContent: {
-    justifyContent: 'center',
+  topContainer: {
     alignItems: 'center',
-    position: 'relative',
+    position: 'absolute',
+    top: 122, // Adjust top to place text above the wave as in your design
+    width: '100%',
+    zIndex: 10, // Keeps the text on top of the background
+    paddingHorizontal: 20, // Prevents the text from touching the edges
   },
   title: {
-    fontSize: 40,
+    fontSize: 38, // Increased size for the title to make it prominent
     fontWeight: 'bold',
-    color: '#fff',
-    textShadowColor: 'rgba(0, 0, 0, 0.5)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 6,
-    letterSpacing: 2,
-    textAlign: 'center',
+    color: '#0066cc', // Title text color
+    textAlign: 'center', // Centers the title
+    marginBottom: 20, // Adds space between the title and subtitle
   },
   subtitle: {
-    fontSize: 18,
-    color: '#d6f3ff',
-    marginTop: 10,
+    fontSize: 18, // Subtitle size adjusted for balance with the title
+    color: '#0066cc', // Subtitle text color
     textAlign: 'center',
-    lineHeight: 22,
-    letterSpacing: 0.5,
-  },
-  footer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    marginHorizontal: 20, // Ensures it doesn’t touch the edges on small screens
+    lineHeight: 26, // Slightly increases line height for readability
   },
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '80%',
+    backgroundColor: '#fff',
     paddingVertical: 15,
-    paddingHorizontal: 20,
-    backgroundColor: '#e6f4f9',
+    paddingHorizontal: 40,
     borderRadius: 30,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: '#75CFEB',
-  },
-  buttonText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#00A3FF',
-    marginLeft: 10,
-  },
-  shadow: {
+    position: 'absolute',
+    bottom: 50,
+    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 5,
   },
-  icon: {
-    marginRight: 10,
+  buttonText: {
+    color: '#0088FF', // Blue color for the button text
+    fontWeight: 'bold',
+    fontSize: 18, // Button text size matches the other screens
   },
 });
