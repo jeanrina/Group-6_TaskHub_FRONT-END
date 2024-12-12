@@ -18,11 +18,11 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
   const { editMode, type, item, index } = route.params || {};
   const [title, setTitle] = useState(editMode ? item.title : '');
   const [body, setBody] = useState(editMode ? item.body : '');
-  const [selectedColor, setSelectedColor] = useState(editMode ? item.color : '#FFFFFF'); // Default color
+  const [selectedColor, setSelectedColor] = useState(editMode ? item.color : '#FFFFFF');
   const [colorModalVisible, setColorModalVisible] = useState(false);
   const [headingModalVisible, setHeadingModalVisible] = useState(false);
-  const [headingStyle, setHeadingStyle] = useState('normal'); // Track selected heading style
-  const [listType, setListType] = useState('none'); // Track list type (none, bullet, or numbered)
+  const [headingStyle, setHeadingStyle] = useState('normal');
+  const [listType, setListType] = useState('none');
 
   const colors = [
     '#FFFFFF',
@@ -86,15 +86,15 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
   const getHeadingStyle = () => {
     switch (headingStyle) {
       case 'heading1':
-        return { fontSize: 24, fontWeight: 'bold' }; // Heading 1 is bold
+        return { fontSize: 24, fontWeight: 'bold' };
       case 'heading2':
-        return { fontSize: 20, fontWeight: 'normal' }; // Heading 2 is normal
+        return { fontSize: 20, fontWeight: 'normal' };
       case 'heading3':
-        return { fontSize: 18, fontWeight: 'normal' }; // Heading 3 is normal
+        return { fontSize: 18, fontWeight: 'normal' };
       case 'heading4':
-        return { fontSize: 16, fontWeight: 'normal' }; // Heading 4 is normal
+        return { fontSize: 16, fontWeight: 'normal' };
       default:
-        return { fontSize: 16 }; // Normal text
+        return { fontSize: 16 };
     }
   };
 
@@ -133,7 +133,7 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
         <View style={styles.toolbar}>
           <TouchableOpacity
             style={styles.iconButton}
-            onPress={() => setHeadingModalVisible(!headingModalVisible)} // Toggle heading options
+            onPress={() => setHeadingModalVisible(!headingModalVisible)}
           >
             <Text style={styles.toolbarIconText}>Aa</Text>
           </TouchableOpacity>
@@ -145,7 +145,7 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.iconButton}
-            onPress={toggleListType} // Toggle list type
+            onPress={toggleListType}
           >
             <Ionicons name={listType === 'number' ? 'list-number' : 'list-outline'} size={20} color="#0096FF" />
           </TouchableOpacity>
@@ -168,7 +168,7 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           placeholder="Write something..."
           placeholderTextColor="#AAA"
           value={body}
-          onChangeText={text => setBody(text)} // Just set body text directly
+          onChangeText={text => setBody(text)}
           multiline
         />
       </View>
@@ -177,13 +177,13 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.saveButton}
-          onPress={() => handleSave('Calendar')}
+          onPress={() => handleSave('Note')}
         >
           <Text style={styles.saveButtonText}>Save as Notes</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.saveButton}
-          onPress={() => handleSave('Calendar')}
+          onPress={() => handleSave('Task')}
         >
           <Text style={styles.saveButtonText}>Save as Tasks</Text>
         </TouchableOpacity>
@@ -211,7 +211,6 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
           </View>
         </View>
       </Modal>
-
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNavigation}>
