@@ -18,6 +18,7 @@ import TeamScreen from './TeamScreen';
 import CreateTeamScreen from './CreateTeamScreen';
 import SoftEngScreen from './SoftEngScreen';
 import CalendarScreen from './CalendarScreen';
+import PickDtaeTimeScreen from './PickDateTimeScreen';
 
 const Stack = createStackNavigator();
 
@@ -41,6 +42,7 @@ export default function App() {
         <Stack.Screen name="CreateTeam" component={CreateTeamScreen} />
         <Stack.Screen name="SoftEng" component={SoftEngScreen} />
         <Stack.Screen name="Calendar" component={CalendarScreen} />
+        <Stack.Screen name="PickDateTime" component={PickDtaeTimeScreen} />
       </Stack.Navigator>
     </AppProvider>
   );

@@ -1,22 +1,27 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SignInSignUpScreen({ navigation }) {
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require('../../assets/waveBackground.png')}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-      >
-        <View style={styles.topContainer}>
+    <LinearGradient
+      colors={['#0096FF', '#A0D9FF']} // Gradient background
+      style={styles.container}
+    >
+      {/* Title and Subtitle */}
+      <View style={styles.topContainer}>
+        <LinearGradient
+          colors={['#0046FF', '#0096FF']}
+          style={styles.titleContainer}
+        >
           <Text style={styles.title}>TASKHUB</Text>
-          <Text style={styles.subtitle}>
-            Personal and Collaborative{'\n'}Task Management
-          </Text>
-        </View>
-      </ImageBackground>
+        </LinearGradient>
+        <Text style={styles.subtitle}>
+          Personal and Collaborative{'\n'}Task Management
+        </Text>
+      </View>
 
+      {/* Buttons */}
       <View style={styles.buttonsContainer}>
         <TouchableOpacity
           style={styles.button}
@@ -31,63 +36,66 @@ export default function SignInSignUpScreen({ navigation }) {
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  backgroundImage: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingTop: 100,
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   topContainer: {
     alignItems: 'center',
-    position: 'absolute',
-    top: 120,
-    width: '100%',
-    zIndex: 10,
+    marginTop: 100,
     paddingHorizontal: 20,
   },
+  titleContainer: {
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    marginBottom: 10,
+  },
   title: {
-    fontSize: 38,
-    fontWeight: 'bold',
-    color: '#0066cc',
+    fontSize: 42,
+    fontWeight: '900',
+    letterSpacing: 2,
+    color: '#ffffff',
     textAlign: 'center',
-    marginBottom: 20,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 6,
   },
   subtitle: {
     fontSize: 18,
-    color: '#0066cc',
+    color: '#444',
     textAlign: 'center',
-    marginHorizontal: 20,
     lineHeight: 26,
+    fontWeight: '500',
+    letterSpacing: 0.5,
+    opacity: 0.9,
   },
   buttonsContainer: {
-    position: 'absolute',
-    bottom: 80,
+    marginBottom: 60,
     width: '100%',
     alignItems: 'center',
   },
   button: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)', // Semi-transparent white
     width: '75%',
     paddingVertical: 14,
-    borderRadius: 8,
+    borderRadius: 30,
     alignItems: 'center',
     marginVertical: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.3,
     shadowRadius: 5,
-    elevation: 4,
+    elevation: 5,
   },
   buttonText: {
-    color: '#0066cc',
+    color: '#0066FF',
     fontSize: 18,
     fontWeight: 'bold',
   },

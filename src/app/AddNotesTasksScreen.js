@@ -70,7 +70,15 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
 
     setTitle('');
     setBody('');
-    navigation.goBack(); // Navigate back after saving
+
+    // Navigate to PickDateTimeScreen and pass parameters
+    navigation.navigate('PickDateTimeScreen', {
+      saveType,        // Type of the saved item (Note or Task)
+      noteTitle: title,  // Title of the note or task
+    });
+
+    // Go back to the previous screen
+    navigation.goBack();
   };
 
   const handleHeadingSelect = (style) => {
@@ -177,13 +185,13 @@ const AddNotesTasksScreen = ({ navigation, route }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.saveButton}
-          onPress={() => handleSave('Note')}
+          onPress={() => handleSave('PickDateTime')}
         >
           <Text style={styles.saveButtonText}>Save as Notes</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.saveButton}
-          onPress={() => handleSave('Task')}
+          onPress={() => handleSave('PickDateTime')}
         >
           <Text style={styles.saveButtonText}>Save as Tasks</Text>
         </TouchableOpacity>
@@ -318,6 +326,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     marginBottom: 20,
+    marginTop: 20,
   },
   saveButton: {
     backgroundColor: '#0D0070',
@@ -354,7 +363,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#DDD',
   },
-
   bottomNavigation: {
     position: 'absolute',
     bottom: 0,
