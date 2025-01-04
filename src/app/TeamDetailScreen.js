@@ -5,27 +5,71 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  TextInput,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const SoftEngScreen = ({ navigation }) => {
+const TeamDetailScreen = ({ navigation }) => {
+  // States for dropdown visibility
   const [showNotes, setShowNotes] = useState(false);
-  const [showTasks, setShowTasks] = useState(false); // Initialize showTasks state
-  const [tasks, setTasks] = useState([
-    { id: 1, text: 'Complete the presentation', completed: false },
-    { id: 2, text: 'Submit the report', completed: false },
-  ]); // Example tasks data
+  const [showTasks, setShowTasks] = useState(false);
 
-  const toggleTaskCompletion = (taskId) => {
+  // State for notes and tasks
+  const [notes, setNotes] = useState([]);
+  const [tasks, setTasks] = useState([]);
+
+  // Function to add a new task
+  const addTask = (task) => {
+    setTasks((prevTasks) => [
+      ...prevTasks,
+      { id: prevTasks.length + 1, ...task },
+    ]);
+  };
+
+  // Function to add a new note
+  const addNote = (note) => {
+    setNotes((prevNotes) => [...prevNotes, note]);
+  };
+
+  // Function to edit a task
+  const editTask = (id, newText) => {
     setTasks((prevTasks) =>
       prevTasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task
+        task.id === id ? { ...task, text: newText } : task
       )
     );
   };
 
-  const notes = ['Script', 'Presentation Outline'];
+  // Function to edit a note
+  const editNote = (index, newText) => {
+    const updatedNotes = [...notes];
+    updatedNotes[index] = newText;
+    setNotes(updatedNotes);
+  };
+
+  // Function to delete a task
+  const deleteTask = (id) => {
+    setTasks((prevTasks) => prevTasks.filter((task) => task.id !== id));
+  };
+
+  // Function to delete a note
+  const deleteNote = (index) => {
+    const updatedNotes = [...notes];
+    updatedNotes.splice(index, 1);
+    setNotes(updatedNotes);
+  };
+
+  // Navigate to AddNotesTasksScreen to add new task or note
+  const navigateToAddScreen = () => {
+    navigation.navigate('AddNotesTasks', {
+      addNote,
+      addTask,
+      notes,   // pass notes to edit
+      tasks,   // pass tasks to edit
+    });
+  };
 
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
@@ -34,14 +78,11 @@ const SoftEngScreen = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color="#FFF" />
         </TouchableOpacity>
-        <Text style={styles.title}>Soft Eng</Text>
+        <Text style={styles.title}>Notes and Tasks</Text>
       </View>
 
       {/* Add Notes and Task Button */}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate('AddNotesTasks')}
-      >
+      <TouchableOpacity style={styles.addButton} onPress={navigateToAddScreen}>
         <Text style={styles.addButtonText}>Add Notes and Task</Text>
       </TouchableOpacity>
 
@@ -62,19 +103,27 @@ const SoftEngScreen = ({ navigation }) => {
         </TouchableOpacity>
         {showNotes && (
           <View style={styles.dropdown}>
-            {notes.map((note, index) => (
-              <View key={index} style={styles.listItem}>
-                <Text style={styles.listText}>{note}</Text>
-                <View style={styles.icons}>
-                  <TouchableOpacity>
-                    <Ionicons name="create-outline" size={20} color="#0096FF" />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Ionicons name="trash-outline" size={20} color="#D81B60" />
-                  </TouchableOpacity>
+            {notes.length === 0 ? (
+              <Text style={styles.noItemsText}>No notes added yet.</Text>
+            ) : (
+              notes.map((note, index) => (
+                <View key={index} style={styles.listItem}>
+                  <TextInput
+                    value={note}
+                    style={styles.listText}
+                    onChangeText={(newText) => editNote(index, newText)}
+                  />
+                  <View style={styles.icons}>
+                    <TouchableOpacity onPress={() => editNote(index, note)}>
+                      <Ionicons name="create-outline" size={20} color="#0096FF" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => deleteNote(index)}>
+                      <Ionicons name="trash-outline" size={20} color="#D81B60" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))
+            )}
           </View>
         )}
 
@@ -94,41 +143,40 @@ const SoftEngScreen = ({ navigation }) => {
         </TouchableOpacity>
         {showTasks && (
           <View style={styles.dropdown}>
-            {tasks.map((task) => (
-              <View key={task.id} style={styles.listItem}>
-                <TouchableOpacity
-                  onPress={() => toggleTaskCompletion(task.id)}
-                  style={styles.checkbox}
-                >
-                  <Ionicons
-                    name={
-                      task.completed ? 'checkbox' : 'checkbox-outline'
-                    }
-                    size={24}
-                    color={task.completed ? '#4CAF50' : '#D81B60'}
-                  />
-                </TouchableOpacity>
-                <Text
-                  style={[
-                    styles.listText,
-                    task.completed && {
+            {tasks.length === 0 ? (
+              <Text style={styles.noItemsText}>No tasks added yet.</Text>
+            ) : (
+              tasks.map((task) => (
+                <View key={task.id} style={styles.listItem}>
+                  <TouchableOpacity
+                    onPress={() => toggleTaskCompletion(task.id)}
+                    style={styles.checkbox}
+                  >
+                    <Ionicons
+                      name={task.completed ? 'checkbox' : 'checkbox-outline'}
+                      size={24}
+                      color={task.completed ? '#4CAF50' : '#D81B60'}
+                    />
+                  </TouchableOpacity>
+                  <Text
+                    style={[styles.listText, task.completed && {
                       textDecorationLine: 'line-through',
                       color: '#666',
-                    },
-                  ]}
-                >
-                  {task.text}
-                </Text>
-                <View style={styles.icons}>
-                  <TouchableOpacity>
-                    <Ionicons name="create-outline" size={20} color="#0096FF" />
-                  </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Ionicons name="trash-outline" size={20} color="#D81B60" />
-                  </TouchableOpacity>
+                    }]}
+                  >
+                    {task.text}
+                  </Text>
+                  <View style={styles.icons}>
+                    <TouchableOpacity onPress={() => editTask(task.id, task.text)}>
+                      <Ionicons name="create-outline" size={20} color="#0096FF" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => deleteTask(task.id)}>
+                      <Ionicons name="trash-outline" size={20} color="#D81B60" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))
+            )}
           </View>
         )}
       </ScrollView>
@@ -253,6 +301,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: 5,
   },
+  noItemsText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginTop: 10,
+  },
 });
 
-export default SoftEngScreen;
+export default TeamDetailScreen;

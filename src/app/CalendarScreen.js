@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const CalendarScreen = () => {
   const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState(new Date());
-  const [showTimePicker, setShowTimePicker] = useState(false);
   const navigation = useNavigation();
 
   const handleDateSelect = (day) => {
@@ -17,85 +14,60 @@ const CalendarScreen = () => {
     Alert.alert('Date Selected', `You picked: ${day.dateString}`);
   };
 
-  const handleTimeChange = (event, time) => {
-    setShowTimePicker(false);
-    if (time) {
-      setSelectedTime(time);
-      Alert.alert('Time Selected', `You picked: ${time.toLocaleTimeString()}`);
-    }
-  };
-
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
-      <View style={styles.innerContainer}>
-        {/* Back Button */}
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name="arrow-back" size={24} color="#FFF" />
-        </TouchableOpacity>
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerLeft}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={28} color="#FFF" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Calendar</Text>
+        </View>
+        <Ionicons name="menu-outline" size={28} color="#FFF" />
+      </View>
 
-        <Text style={styles.title}>Select Date & Time</Text>
-
-        {/* Calendar */}
+      {/* Calendar Section */}
+      <View style={styles.calendarContainer}>
+        <Text style={styles.sectionTitle}>Select date</Text>
         <Calendar
           onDayPress={handleDateSelect}
           markedDates={{
-            [selectedDate]: { selected: true, marked: true, selectedColor: '#0078D4' },
+            [selectedDate]: { selected: true, selectedColor: '#0096FF' },
           }}
           theme={{
-            selectedDayBackgroundColor: '#0078D4',
-            todayTextColor: '#FF5722',
+            calendarBackground: '#000080',
+            dayTextColor: '#FFF',
+            monthTextColor: '#FFF',
+            todayTextColor: '#FFF',
             arrowColor: '#FFF',
-            textDayFontWeight: '600',
+            textDayFontWeight: '700',
+            selectedDayBackgroundColor: '#0078D4',
           }}
+          style={styles.calendar}
         />
-
-        {/* Selected Date */}
+        {/* Selected Event Example */}
         {selectedDate && (
-          <View style={styles.card}>
-            <Text style={styles.selectedText}>📅 Selected Date: {selectedDate}</Text>
+          <View style={styles.eventBubble}>
+            <Text style={styles.eventText}>Exercise</Text>
+            <Text style={styles.eventDate}>{selectedDate}</Text>
           </View>
         )}
+      </View>
 
-        {/* Selected Time */}
-        <View style={styles.card}>
-          <Text style={styles.selectedText}>
-            ⏰ Selected Time: {selectedTime.toLocaleTimeString()}
-          </Text>
-        </View>
-
-        {/* Time Picker */}
-        <TouchableOpacity style={styles.timePickerButton} onPress={() => setShowTimePicker(true)}>
-          <LinearGradient colors={['#0078D4', '#0056A1']} style={styles.gradientButton}>
-            <Text style={styles.timePickerButtonText}>Pick Time</Text>
-          </LinearGradient>
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNavigation}>
+        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Home')}>
+          <Ionicons name="home-outline" size={24} color="#FFF" />
+          <Text style={styles.navText}>Home</Text>
         </TouchableOpacity>
-
-        {showTimePicker && (
-          <DateTimePicker
-            value={selectedTime}
-            mode="time"
-            display="spinner"
-            onChange={handleTimeChange}
-          />
-        )}
-
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNavigation}>
-          <TouchableOpacity 
-            style={styles.navButton} 
-            onPress={() => navigation.navigate('Home')}
+        <TouchableOpacity
+          style={styles.navButton}
+          onPress={() => navigation.navigate('Settings')}
         >
-            <Ionicons name="home-outline" size={24} color="#FFF" />
-            <Text style={styles.navText}>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.navButton} 
-            onPress={() => navigation.navigate('Settings')}
-        >
-            <Ionicons name="settings-outline" size={24} color="#FFF" />
-            <Text style={styles.navText}>Settings</Text>
-          </TouchableOpacity>
-        </View>
+          <Ionicons name="settings-outline" size={24} color="#FFF" />
+          <Text style={styles.navText}>Settings</Text>
+        </TouchableOpacity>
       </View>
     </LinearGradient>
   );
@@ -105,63 +77,68 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 50,
-    paddingBottom: 20,
   },
-  innerContainer: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: 'transparent',
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 10,
   },
-  backButton: {
-    position: 'absolute',
-    top: 10,
-    left: 10,
-    zIndex: 10,
-    padding: 10,
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  title: {
-    fontSize: 30,
-    fontWeight: '700',
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
     color: '#FFF',
-    textAlign: 'center',
-    marginBottom: 30,
-    letterSpacing: 1.2,
+    marginLeft: 10, // Adds spacing between the back arrow and title
   },
-  selectedText: {
-    fontSize: 18,
-    color: '#333',
-    marginVertical: 10,
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  card: {
-    backgroundColor: '#FFF',
-    padding: 20,
+  calendarContainer: {
+    marginHorizontal: 20,
+    marginTop: 10,
+    backgroundColor: '#000080',
     borderRadius: 15,
-    marginBottom: 20,
-    elevation: 3,
+    padding: 10,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
     shadowRadius: 5,
+    elevation: 6,
   },
-  timePickerButton: {
-    marginTop: 20,
-    alignSelf: 'center',
-    borderRadius: 30,
+  calendar: {
+    borderRadius: 10,
     overflow: 'hidden',
   },
-  gradientButton: {
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 30,
-    elevation: 5,
-  },
-  timePickerButtonText: {
-    fontSize: 18,
+  sectionTitle: {
     color: '#FFF',
-    textAlign: 'center',
-    fontWeight: 'bold',
+    fontSize: 18,
+    marginBottom: 10,
+    textAlign: 'left',
+    fontWeight: '600',
+  },
+  eventBubble: {
+    position: 'absolute',
+    top: 80,
+    left: '30%',
+    backgroundColor: '#FFF',
+    borderRadius: 12,
+    padding: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  eventText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000',
+  },
+  eventDate: {
+    fontSize: 12,
+    color: '#888',
   },
   bottomNavigation: {
     position: 'absolute',

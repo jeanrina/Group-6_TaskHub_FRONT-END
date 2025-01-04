@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
     justifyContent: 'flex-end', // Keeps the wave at the bottom of the screen
+    
   },
   topContainer: {
     alignItems: 'center',

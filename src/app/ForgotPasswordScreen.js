@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from './supabaseClient'; // import the supabase client
 
 export default function ForgotPasswordScreen({ navigation }) {
   const [email, setEmail] = useState('');
 
-  const handleResetPassword = () => {
+  const handleResetPassword = async () => {
     if (email) {
-      Alert.alert(
-        'Password Reset',
-        'If this email is registered, a password reset link will be sent.',
-        [{ text: 'OK', onPress: () => navigation.goBack() }]
-      );
+      const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+      if (error) {
+        Alert.alert('Error', error.message);
+      } else {
+        Alert.alert(
+          'Password Reset',
+          'If this email is registered, a password reset link will be sent.',
+          [{ text: 'OK', onPress: () => navigation.goBack() }]
+        );
+      }
     } else {
       Alert.alert('Error', 'Please enter a valid email.');
     }

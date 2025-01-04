@@ -1,33 +1,53 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, CheckBox, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { AppContext } from '../context/AppContext';
 
 const NotesTaskHomeScreen = ({ navigation }) => {
-  // States for dropdown visibility
+  const { notes, tasks, removeNote, removeTask } = useContext(AppContext);
   const [showNotes, setShowNotes] = useState(false);
   const [showTasks, setShowTasks] = useState(false);
+  const [taskStatus, setTaskStatus] = useState({});
+  const [noteStatus, setNoteStatus] = useState({});
 
-  // Sample data and states for checkbox
-  const notes = ['Note 1', 'Note 2', 'Note 3'];
-  const [tasks, setTasks] = useState([
-    { id: 1, text: 'Task 1', completed: false },
-    { id: 2, text: 'Task 2', completed: false },
-    { id: 3, text: 'Task 3', completed: false },
-  ]);
-
-  // Toggle task completion
-  const toggleTaskCompletion = (id) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+  // Toggle task completion status
+  const toggleTaskStatus = (id) => {
+    setTaskStatus((prev) => ({ ...prev, [id]: !prev[id] }));
   };
+
+  // Toggle note completion status
+  const toggleNoteStatus = (index) => {
+    setNoteStatus((prev) => ({ ...prev, [index]: !prev[index] }));
+  };
+
+  // Delete confirmation
+  const confirmDelete = (type, idOrIndex) => {
+  Alert.alert(
+    'Delete Confirmation',
+    `Are you sure you want to delete this ${type}?`, // Corrected string interpolation
+    [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        onPress: () => {
+          console.log("Deleting", type, idOrIndex); // Debug log for delete action
+          if (type === 'note') {
+            removeNote(idOrIndex);
+          }
+          if (type === 'task') {
+            removeTask(idOrIndex);
+          }
+        },
+      },
+    ],
+    { cancelable: true }
+  );
+};
 
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
-      {/* Header Section */}
+      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={30} color="#FFF" />
@@ -35,7 +55,7 @@ const NotesTaskHomeScreen = ({ navigation }) => {
         <Text style={styles.title}>Notes and Tasks</Text>
       </View>
 
-      {/* Add Notes and Task Button */}
+      {/* Add Notes and Tasks */}
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => navigation.navigate('AddNotesTasks')}
@@ -62,13 +82,35 @@ const NotesTaskHomeScreen = ({ navigation }) => {
           <View style={styles.dropdown}>
             {notes.map((note, index) => (
               <View key={index} style={styles.listItem}>
-                <Text style={styles.listText}>{note}</Text>
+                <CheckBox
+                  value={noteStatus[index] || false}
+                  onValueChange={() => toggleNoteStatus(index)}
+                  style={styles.checkbox}
+                />
+                <Text
+                  style={[
+                    styles.listText,
+                    noteStatus[index] && { textDecorationLine: 'line-through', color: '#888' },
+                  ]}
+                >
+                  {note.title}
+                </Text>
+                <Text style={styles.listText}>{note.body}</Text>
                 <View style={styles.icons}>
-                  <TouchableOpacity>
-                    <Ionicons name="create-outline" size={20} color="#0096FF" />
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('AddNotesTasks', {
+                        editMode: true,
+                        type: 'Note',
+                        item: note,
+                        index,
+                      })
+                    }
+                  >
+                    <Ionicons name="create-outline" size={24} color="#0096FF" />
                   </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Ionicons name="trash-outline" size={20} color="#D81B60" />
+                  <TouchableOpacity onPress={() => confirmDelete('note', index)}>
+                    <Ionicons name="trash-outline" size={24} color="#FF3D00" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -94,35 +136,35 @@ const NotesTaskHomeScreen = ({ navigation }) => {
           <View style={styles.dropdown}>
             {tasks.map((task) => (
               <View key={task.id} style={styles.listItem}>
-                <TouchableOpacity
-                  onPress={() => toggleTaskCompletion(task.id)}
+                <CheckBox
+                  value={taskStatus[task.id] || false}
+                  onValueChange={() => toggleTaskStatus(task.id)}
                   style={styles.checkbox}
-                >
-                  <Ionicons
-                    name={
-                      task.completed ? 'checkbox' : 'checkbox-outline'
-                    }
-                    size={24}
-                    color={task.completed ? '#4CAF50' : '#D81B60'}
-                  />
-                </TouchableOpacity>
+                />
                 <Text
                   style={[
                     styles.listText,
-                    task.completed && {
-                      textDecorationLine: 'line-through',
-                      color: '#666',
-                    },
+                    taskStatus[task.id] && { textDecorationLine: 'line-through', color: '#888' },
                   ]}
                 >
                   {task.text}
                 </Text>
+                <Text style={styles.listText}>{task.body}</Text>
                 <View style={styles.icons}>
-                  <TouchableOpacity>
-                    <Ionicons name="create-outline" size={20} color="#0096FF" />
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('AddNotesTasks', {
+                        editMode: true,
+                        type: 'Task',
+                        item: task,
+                        index: task.id,
+                      })
+                    }
+                  >
+                    <Ionicons name="create-outline" size={24} color="#0096FF" />
                   </TouchableOpacity>
-                  <TouchableOpacity>
-                    <Ionicons name="trash-outline" size={20} color="#D81B60" />
+                  <TouchableOpacity onPress={() => confirmDelete('task', task.id)}>
+                    <Ionicons name="trash-outline" size={24} color="#FF3D00" />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -130,58 +172,22 @@ const NotesTaskHomeScreen = ({ navigation }) => {
           </View>
         )}
       </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNavigation}>
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Ionicons name="home-outline" size={24} color="#FFF" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={() => navigation.navigate('Settings')}
-        >
-          <Ionicons name="settings-outline" size={24} color="#FFF" />
-          <Text style={styles.navText}>Settings</Text>
-        </TouchableOpacity>
-      </View>
     </LinearGradient>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 40,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 30,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFF',
-    marginLeft: 10,
-  },
+  container: { flex: 1, paddingHorizontal: 20, paddingTop: 40 },
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 30 },
+  title: { fontSize: 24, fontWeight: 'bold', color: '#FFF', marginLeft: 10 },
   addButton: {
     marginBottom: 20,
     borderRadius: 25,
     paddingVertical: 15,
     alignItems: 'center',
     backgroundColor: '#0D0070',
-    overflow: 'hidden',
   },
-  addButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFF',
-  },
+  addButtonText: { fontSize: 18, fontWeight: 'bold', color: '#FFF' },
   option: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -190,67 +196,21 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderRadius: 15,
     marginBottom: 15,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
   },
-  optionText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-    marginLeft: 15,
-  },
-  dropdown: {
-    backgroundColor: '#F0F0F0',
-    borderRadius: 10,
-    padding: 10,
-    marginBottom: 15,
-  },
+  optionText: { fontSize: 18, fontWeight: 'bold', color: '#333', marginLeft: 15 },
+  dropdown: { backgroundColor: '#F0F0F0', borderRadius: 10, padding: 10, marginBottom: 15 },
   listItem: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#FFF',
     padding: 15,
+    backgroundColor: '#FFF',
     borderRadius: 10,
     marginBottom: 10,
-    borderColor: '#E0E0E0',
-    borderWidth: 1,
   },
-  listText: {
-    fontSize: 16,
-    color: '#333',
-    flex: 1,
-  },
-  icons: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  checkbox: {
-    marginRight: 10,
-  },
-  scrollView: {
-    marginBottom: 80,
-  },
-  bottomNavigation: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#0096FF',
-    paddingVertical: 15,
-  },
-  navButton: {
-    alignItems: 'center',
-  },
-  navText: {
-    color: '#FFF',
-    fontSize: 14,
-    marginTop: 5,
-  },
+  listText: { fontSize: 16, flex: 1 },
+  icons: { flexDirection: 'row', gap: 10 },
+  checkbox: { marginRight: 10 },
+  scrollView: { marginBottom: 80 },
 });
 
 export default NotesTaskHomeScreen;

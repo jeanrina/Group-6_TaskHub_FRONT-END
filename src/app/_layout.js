@@ -16,8 +16,9 @@ import NotesTaskHomeScreen from './NotesTaskHomeScreen';
 import AddNotesTasksScreen from './AddNotesTasksScreen';
 import TeamScreen from './TeamScreen';
 import CreateTeamScreen from './CreateTeamScreen';
-import SoftEngScreen from './SoftEngScreen';
+import TeamDetailScreen from './TeamDetailScreen';
 import CalendarScreen from './CalendarScreen';
+import PickDtaeTimeScreen from './PickDateTimeScreen';
 
 const Stack = createStackNavigator();
 
@@ -39,8 +40,9 @@ export default function App() {
         <Stack.Screen name="AddNotesTasks" component={AddNotesTasksScreen} />
         <Stack.Screen name="Team" component={TeamScreen} />
         <Stack.Screen name="CreateTeam" component={CreateTeamScreen} />
-        <Stack.Screen name="SoftEng" component={SoftEngScreen} />
+        <Stack.Screen name="TeamDetail" component={TeamDetailScreen} />
         <Stack.Screen name="Calendar" component={CalendarScreen} />
+        <Stack.Screen name="PickDateTime" component={PickDtaeTimeScreen} />
       </Stack.Navigator>
     </AppProvider>
   );

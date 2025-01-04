@@ -3,14 +3,16 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { Ionicons, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = ({ route, navigation }) => {
+  const { username } = route.params || ([]) ; // Get the username from route params
+
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
         <View style={styles.userProfile}>
           <Ionicons name="person-circle" size={50} color="#FFF" />
-          <Text style={styles.userName}>Arriane Dadang</Text>
+          <Text style={styles.userName}>{username}</Text> {/* Display username */}
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('Reminder')}>
           <Ionicons name="notifications-outline" size={30} color="#FFF" />
@@ -28,7 +30,7 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       {/* Task Sections */}
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.sectionButton}
         onPress={() => navigation.navigate('NotesTask')}
       >
@@ -38,8 +40,8 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        style={styles.sectionButton} 
+      <TouchableOpacity
+        style={styles.sectionButton}
         onPress={() => navigation.navigate('Team')}
       >
         <View style={styles.sectionContent}>
@@ -48,7 +50,7 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.sectionButton}
         onPress={() => navigation.navigate('Calendar')}
       >
@@ -60,10 +62,6 @@ const HomeScreen = ({ navigation }) => {
 
       {/* Bottom Navigation */}
       <View style={styles.bottomNavigation}>
-        <TouchableOpacity style={styles.navButton}>
-          <Ionicons name="home-outline" size={24} color="#FFF" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           style={styles.navButton}
           onPress={() => navigation.navigate('Settings')} // Navigate to SettingsScreen

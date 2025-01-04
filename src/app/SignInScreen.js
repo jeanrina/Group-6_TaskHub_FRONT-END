@@ -1,15 +1,43 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from './supabaseClient'; // import the supabase client
 
 export default function SignInScreen({ navigation }) {
-    const [passwordVisible, setPasswordVisible] = useState(false);
-    const [activeTab, setActiveTab] = useState("signIn");
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [activeTab, setActiveTab] = useState("signIn");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSignIn = async () => {
+    if (!username) {
+      setErrorMessage("Missing username or email");
+      return;
+    }
+    
+    if (!password) {
+      setErrorMessage("Missing password");
+      return;
+    }
+  
+    // If all required fields are present, proceed to sign-in
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: username,  // Supabase treats email as username here
+      password,
+    });
+  
+    if (error) {
+      setErrorMessage(error.message);
+    } else {
+      // On successful login, navigate to HomeScreen and pass the username
+      navigation.navigate('Home', { username: data.user.email }); // or use data.user.user_metadata if you store username differently
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Text style={styles.logo}>TASKHUB</Text>
-      {/* Sign In and Sign Up Tabs */}
       <View style={styles.tabsContainer}>
         <TouchableOpacity 
           style={styles.tab} 
@@ -30,14 +58,25 @@ export default function SignInScreen({ navigation }) {
           <Text style={[styles.tabText, activeTab === "signUp" && styles.activeTabText]}>Sign Up</Text>
         </TouchableOpacity>
       </View>
+
       <Ionicons name="person-circle" size={100} color="#0094FF" style={styles.icon} />
-      <TextInput style={styles.input} placeholder="Name" placeholderTextColor="#aaa" />
+      
+      {/* Sign In Form */}
+      <TextInput 
+        style={styles.input} 
+        placeholder="Email or Username" 
+        placeholderTextColor="#aaa" 
+        value={username}
+        onChangeText={setUsername}
+      />
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
           placeholder="Password"
           placeholderTextColor="#aaa"
           secureTextEntry={!passwordVisible}
+          value={password}
+          onChangeText={setPassword}
         />
         <TouchableOpacity onPress={() => setPasswordVisible(!passwordVisible)}>
           <Ionicons
@@ -47,28 +86,40 @@ export default function SignInScreen({ navigation }) {
           />
         </TouchableOpacity>
       </View>
+
+      {/* Error Message */}
+      {errorMessage && <Text style={styles.errorMessage}>{errorMessage}</Text>}
+
+      {/* Sign In Button */}
       <TouchableOpacity 
         style={styles.button}
-        onPress={() => navigation.navigate('Home')}
+        onPress={handleSignIn}
       >
         <Text style={styles.buttonText}>Sign In</Text>
       </TouchableOpacity>
 
-      {/* Forgot Password and Sign Up Links */}
+      {/* Forgot Password Link */}
       <TouchableOpacity 
-        onPress={() => navigation.navigate('ForgotPassword')}
-        style={styles.link}
+        style={styles.forgotPasswordContainer}
+        onPress={() => navigation.navigate('ForgotPassword')} // Navigate to ForgotPasswordScreen
       >
-        <Text style={styles.linkText}>Forgot Password?</Text>
+        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
       </TouchableOpacity>
-      <View style={styles.signUpContainer}>
-        <Text style={styles.noAccountText}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-          <Text style={styles.signUpText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
+
+      {/* Don't have an account link */}
+      {activeTab === "signIn" && (
+        <View style={styles.dontHaveAccountContainer}>
+          <Text style={styles.dontHaveAccountText}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => {
+            setActiveTab("signUp");
+            navigation.navigate('SignUp');
+          }}>
+            <Text style={styles.signUpLink}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </View>
-  );
+  );  
 }
 
 const styles = StyleSheet.create({
@@ -141,25 +192,31 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
-  link: {
-    marginTop: 15,
-  },
-  linkText: {
-    fontSize: 16,
-    color: '#0094FF',
-    textDecorationLine: 'underline',
-  },
-  signUpContainer: {
-    flexDirection: 'row',
+  forgotPasswordContainer: {
     marginTop: 10,
   },
-  noAccountText: {
-    fontSize: 16,
-    color: '#555',
+  forgotPasswordText: {
+    color: '#0094FF',
+    fontSize: 14,
+    textAlign: 'center',
   },
-  signUpText: {
+  dontHaveAccountContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+    justifyContent: 'center',
+  },
+  dontHaveAccountText: {
+    fontSize: 16,
+    color: '#777',
+  },
+  signUpLink: {
     fontSize: 16,
     color: '#0094FF',
     fontWeight: 'bold',
+  },
+  errorMessage: {
+    color: 'red',
+    marginTop: 10,
+    textAlign: 'center',
   },
 });

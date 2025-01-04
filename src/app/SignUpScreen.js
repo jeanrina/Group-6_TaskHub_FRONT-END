@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { supabase } from './supabaseClient'; // Import Supabase client
 
 export default function SignUpScreen({ navigation }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -25,8 +26,8 @@ export default function SignUpScreen({ navigation }) {
     return passwordPattern.test(password);
   };
 
-  // Handle form submission
-  const handleSubmit = () => {
+  // Handle form submission for sign up
+  const handleSubmit = async () => {
     // Validate Email
     if (!validateEmail(email)) {
       Alert.alert("Invalid Email", "Please enter a valid email address.");
@@ -45,9 +46,19 @@ export default function SignUpScreen({ navigation }) {
       return;
     }
 
-    // If validation passes, display success message
-    Alert.alert("Success", "Sign up successful!");
-    // Proceed with the sign-up logic here, e.g., making an API call
+    // Sign up the user with Supabase
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      Alert.alert("Sign Up Error", error.message);
+    } else {
+      // If sign-up is successful, navigate to SignIn Screen or log the user in directly
+      Alert.alert("Success", "Account created successfully! Please sign in.");
+      navigation.navigate('SignIn'); // Navigate to the SignIn screen
+    }
   };
 
   return (
@@ -140,6 +151,17 @@ export default function SignUpScreen({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
+
+      {/* Already have an account link */}
+      <View style={styles.alreadyHaveAccountContainer}>
+        <Text style={styles.alreadyHaveAccountText}>Already have an account? </Text>
+        <TouchableOpacity onPress={() => {
+          setActiveTab("signIn");
+          navigation.navigate('SignIn');
+        }}>
+          <Text style={styles.signInLink}>Sign In</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -174,9 +196,6 @@ const styles = StyleSheet.create({
   activeTabText: {
     fontSize: 32,
     fontWeight: 'bold',
-  },
-  contentContainer: {
-    alignItems: 'center',
   },
   sectionHeader: {
     fontSize: 18,
@@ -218,6 +237,20 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 18,
     color: '#fff',
+    fontWeight: 'bold',
+  },
+  alreadyHaveAccountContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+    justifyContent: 'center',
+  },
+  alreadyHaveAccountText: {
+    fontSize: 16,
+    color: '#777',
+  },
+  signInLink: {
+    fontSize: 16,
+    color: '#0094FF',
     fontWeight: 'bold',
   },
 });

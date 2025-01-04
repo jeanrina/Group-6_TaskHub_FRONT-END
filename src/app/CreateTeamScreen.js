@@ -1,10 +1,24 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { AppContext } from '../context/AppContext';
 
 const CreateTeamScreen = ({ navigation }) => {
   const [teamName, setTeamName] = useState('');
+  const { addTeam } = useContext(AppContext);
+
+  const handleCreateTeam = () => {
+    if (!teamName.trim()) {
+      Alert.alert('Error', 'Team name cannot be empty.');
+      return;
+    }
+
+    addTeam(teamName); // Add team to context
+    Alert.alert('Success', `Team "${teamName}" created!`);
+    setTeamName('');
+    navigation.goBack();
+  };
 
   return (
     <LinearGradient colors={['#0096FF', '#A0D9FF']} style={styles.container}>
@@ -16,38 +30,17 @@ const CreateTeamScreen = ({ navigation }) => {
         <Text style={styles.title}>Create Team</Text>
       </View>
 
-      {/* Team Name Input Section */}
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Enter team name"
-            placeholderTextColor="#aaa"
-            value={teamName}
-            onChangeText={setTeamName}
-            autoCapitalize="words"
-          />
-          <TouchableOpacity
-            style={styles.createButton}
-            onPress={() => {
-              console.log('Team Created:', teamName);
-              // You can add navigation or API calls here.
-            }}
-          >
-            <Text style={styles.createButtonText}>Create Team</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      {/* Bottom Navigation */}
-      <View style={styles.bottomNavigation}>
-        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Home')}>
-          <Ionicons name="home-outline" size={24} color="#FFF" />
-          <Text style={styles.navText}>Home</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navButton} onPress={() => navigation.navigate('Settings')}>
-          <Ionicons name="settings-outline" size={24} color="#FFF" />
-          <Text style={styles.navText}>Settings</Text>
+      {/* Input Section */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter team name"
+          placeholderTextColor="#aaa"
+          value={teamName}
+          onChangeText={setTeamName}
+        />
+        <TouchableOpacity style={styles.createButton} onPress={handleCreateTeam}>
+          <Text style={styles.createButtonText}>Create Team</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
@@ -59,22 +52,20 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 20,
     paddingTop: 40,
-    justifyContent: 'space-between',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 30,
   },
   title: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: 'bold',
     color: '#FFF',
     marginLeft: 10,
   },
   inputContainer: {
-    marginTop: 30,
-    marginBottom: 20,
+    marginTop: 50,
   },
   input: {
     backgroundColor: '#FFF',
@@ -84,49 +75,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
     marginBottom: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 6,
   },
   createButton: {
     backgroundColor: '#0D0070',
     borderRadius: 25,
     paddingVertical: 15,
     alignItems: 'center',
-    marginTop: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
   },
   createButtonText: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#FFF',
-  },
-  scrollView: {
-    marginBottom: 100, // To avoid content hiding under bottom navigation
-  },
-  bottomNavigation: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: '#0096FF',
-    paddingVertical: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-  },
-  navButton: {
-    alignItems: 'center',
-  },
-  navText: {
-    color: '#FFF',
-    fontSize: 14,
-    marginTop: 5,
   },
 });
 
